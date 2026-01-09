@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
 import './App.css'
+import Game from './Game';
 
 function App() {
   return (
     <>
-      <Header>
+      <header>
         <h1>Memory Card Game</h1>
-      </Header>
+      </header>
+      <Game />
     </>
   )
 }
