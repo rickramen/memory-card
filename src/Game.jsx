@@ -50,29 +50,31 @@ export default function Game() {
   );
 
   function handleCardClick(cardId) {
-  // Check if card was already clicked
-  if (clickedCards.has(cardId)) {
-    // Reset game
-    setScore(0);
-    setClickedCards(new Set());
-  } else {
-    setClickedCards(prev => new Set(prev).add(cardId));
-    setScore(prevScore => {
-      const newScore = prevScore + 1;
-      setHighScore(prevHigh => Math.max(prevHigh, newScore));
+    // Reset if card clicked again
+    if (clickedCards.has(cardId)) {
+      setScore(0);
+      setClickedCards(new Set());
+      return;
+    }
 
-      // Handle win and reset
-      if (newScore === cards.length) {
-        alert("You win!");
-        return 0; 
-      }
+    const newClickedCards = new Set(clickedCards);
+    newClickedCards.add(cardId);
+    setClickedCards(newClickedCards);
 
-      return newScore;
-    });
+    // Update score and high score
+    const newScore = score + 1;
+    setScore(newScore);
+    setHighScore(prevHigh => Math.max(prevHigh, newScore));
+
+    // Win condition
+    if (newClickedCards.size === cards.length) {
+      alert("You win!");
+      setScore(0);
+      setClickedCards(new Set());
+    }
+
+    setCards(prev => shuffleCards(prev));
   }
-  
-  setCards(prev => shuffleCards(prev));
-}
 
 
   // Basic shuffle function
