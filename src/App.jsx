@@ -1,4 +1,3 @@
-import './App.css'
 import Game from './Game';
 
 function App() {
@@ -9,7 +8,7 @@ function App() {
       </header>
       <Game />
     </>
-  )
+  );
 }
 
 export default App

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Card from "./components/Card";
+import styles from './Game.module.css';
 
 // Returns 12 IDs out of the 1025 possible Pokemon
 function getRandomIds(count, max = 1025) {
@@ -42,7 +43,7 @@ export default function Game() {
   if (loading) return <p>Loading cards...</p>;
 
   return (
-    <div className="card-grid">
+    <div className={styles.cardGrid}>
       {cards.map(card => (
         <Card
           key={card.id}
@@ -54,10 +55,9 @@ export default function Game() {
     </div>
   );
 
-  function handleCardClick(card) {
-    console.log("Clicked card:", card.id);
-    // shuffle cards after every click
-    setCards(prevCards => shuffleCards([...prevCards]));
+  function handleCardClick(cardID) {
+    //console.log("Clicked card:", cardID);
+    setCards(prevCards => shuffleCards(prevCards));
   }
 }
 
