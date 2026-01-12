@@ -2,25 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Card from "./components/Card";
+import ScoreTracker from "./components/ScoreTracker";
 import styles from './Game.module.css';
-
-// Returns 12 IDs out of the 1025 possible Pokemon
-function getRandomIds(count, max = 1025) {
-  const ids = new Set();
-  while (ids.size < count) {
-    ids.add(Math.floor(Math.random() * max) + 1);
-  }
-  return Array.from(ids);
-}
 
 export default function Game() {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [clickedCards, setClickedCards] = useState(new Set());
+
   useEffect(() => {
     async function loadCards() {
       const ids = getRandomIds(12);
-
       const fetches = ids.map(id =>
         fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
           .then(res => res.json())
@@ -28,49 +23,77 @@ export default function Game() {
             id: data.id,
             name: capitalizeName(data.name),
             image: data.sprites.other["official-artwork"].front_default
-
           }))
       );
-
       const results = await Promise.all(fetches);
       setCards(results);
       setLoading(false);
     }
-
     loadCards();
   }, []);
 
   if (loading) return <p>Loading cards...</p>;
-
   return (
-    <div className={styles.cardGrid}>
-      {cards.map(card => (
-        <Card
-          key={card.id}
-          name={card.name}
-          image={card.image}
-          onClick={() => handleCardClick(card.id)}
-        />
-      ))}
-    </div>
+    <>
+      <ScoreTracker score={score} highScore={highScore} />
+      <div className={styles.cardGrid}>
+        {cards.map(card => (
+          <Card
+            key={card.id}
+            name={card.name}
+            image={card.image}
+            onClick={() => handleCardClick(card.id)}
+          />
+        ))}
+      </div>
+    </>   
   );
 
-  function handleCardClick(cardID) {
-    //console.log("Clicked card:", cardID);
-    setCards(prevCards => shuffleCards(prevCards));
+  function handleCardClick(cardId) {
+  // Check if card was already clicked
+  if (clickedCards.has(cardId)) {
+    // Reset game
+    setScore(0);
+    setClickedCards(new Set());
+  } else {
+    setClickedCards(prev => new Set(prev).add(cardId));
+    setScore(prevScore => {
+      const newScore = prevScore + 1;
+      setHighScore(prevHigh => Math.max(prevHigh, newScore));
+
+      // Handle win and reset
+      if (newScore === cards.length) {
+        alert("You win!");
+        return 0; 
+      }
+
+      return newScore;
+    });
   }
-}
-
-// Basic shuffle function
-function shuffleCards(cardsArray) {
-  return cardsArray
-    .map(card => ({ card, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ card }) => card);
+  
+  setCards(prev => shuffleCards(prev));
 }
 
 
-// Helper function to capitalize names
-function capitalizeName(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  // Basic shuffle function
+  function shuffleCards(cardsArray) {
+    return cardsArray
+      .map(card => ({ card, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ card }) => card);
+  }
+
+  // Returns 12 random IDs out of the 1025 possible Pokemon
+  function getRandomIds(count, max = 1025) {
+    const ids = new Set();
+    while (ids.size < count) {
+      ids.add(Math.floor(Math.random() * max) + 1);
+    }
+    return Array.from(ids);
+  }
+
+  // Helper function to capitalize names
+  function capitalizeName(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 }

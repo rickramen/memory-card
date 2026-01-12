@@ -1,3 +1,4 @@
+import ScoreTracker from './components/ScoreTracker';
 import Game from './Game';
 
 function App() {
