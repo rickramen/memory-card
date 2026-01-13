@@ -1,8 +1,8 @@
-// ScoreTracker.jsx
+// Scoreboard.jsx
 
-import styles from "./ScoreTracker.module.css";
+import styles from "./Scoreboard.module.css";
 
-export default function ScoreTracker({ score, highScore }) {
+export default function Scoreboard({ score, highScore }) {
   return (
     <div className={styles.scoreContainer}>
       <p className={styles.currentScore}>Score: {score}</p>

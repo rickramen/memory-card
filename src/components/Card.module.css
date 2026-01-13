@@ -1,8 +1,8 @@
 /* Card.module.css */
 
 .card {
-  width: 240px;
-  height: 300px;
+  width: 200px;
+  height: 260px;
   display: flex;
   
   flex-direction: column;
